@@ -15,7 +15,7 @@ type tree struct {
 }
 
 func (p *Phy) Print() {
-	fmt.Println("There are", len(p.leaves), "leaves")
+	fmt.Println("There are", p.Size(), "leaves")
 
 	if p.root != nil {
 		fmt.Println("Tree is rooted")
@@ -24,7 +24,7 @@ func (p *Phy) Print() {
 	}
 
 	counter := 1
-	for i := 0; i < len(p.leaves); i++ {
+	for i := 0; i < p.Size(); i++ {
 		place := p.leaves[i]
 
 		for place != nil && place.value == 0 {
@@ -34,7 +34,7 @@ func (p *Phy) Print() {
 		}
 	}
 
-	for i := 0; i < len(p.leaves); i++ {
+	for i := 0; i < p.Size(); i++ {
 		place := p.leaves[i]
 
 		for place != nil {
@@ -49,11 +49,15 @@ func (p *Phy) Print() {
 
 }
 
+func (p *Phy) Size() int {
+	return len(p.leaves)
+}
+
 func zero(p *Phy) {
 	if p.root != nil {
 		zeroTree(p.root)
 	} else {
-		for i := 0; i < len(p.leaves); i++ {
+		for i := 0; i < p.Size(); i++ {
 			place := p.leaves[i]
 			for place != nil {
 				place.value = 0
@@ -83,6 +87,9 @@ func link(A, B int, p *Phy) {
 	for b.parent != nil {
 		b = b.parent
 	}
+	if a == b {
+		panic("Already linked")
+	}
 	link := tree{left: a, right: b}
 	a.parent = &link
 	b.parent = &link
@@ -102,7 +109,7 @@ func NewPhy(n int) *Phy {
 }
 
 func (p *Phy) Assemble(instruct [][2]int) {
-	if len(instruct)+1 != len(p.leaves) {
+	if len(instruct)+1 != p.Size() {
 		panic("INSTRUCITONS HAVE WRONG LENGTH")
 	}
 	for _, join := range instruct {
