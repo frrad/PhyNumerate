@@ -49,6 +49,22 @@ func (p *Phy) Print() {
 
 }
 
+//shows contents of tree for debugging purposes
+func peek(p *Phy) {
+
+	for i := 0; i < p.Size(); i++ {
+		place := p.leaves[i]
+
+		for place != nil {
+			fmt.Print(place.value, "<>")
+			place = place.parent
+		}
+		fmt.Print(")\n")
+
+	}
+
+}
+
 func (p *Phy) Size() int {
 	return len(p.leaves)
 }
