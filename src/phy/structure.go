@@ -3,8 +3,10 @@ package phy
 import "fmt"
 
 type Phy struct {
-	leaves []*tree
-	root   *tree
+	leaves     []*tree
+	root       *tree
+	probcache  map[uint64]*NPoly
+	scorecache map[uint64]int
 }
 
 type tree struct {
@@ -133,7 +135,7 @@ func NewPhy(n int) *Phy {
 		llist[i] = new(tree)
 	}
 
-	newPhy := Phy{leaves: llist}
+	newPhy := Phy{leaves: llist, probcache: make(map[uint64]*NPoly), scorecache: make(map[uint64]int)}
 
 	return &newPhy
 

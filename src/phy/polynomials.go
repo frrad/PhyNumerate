@@ -12,6 +12,12 @@ func NewNPoly(deg int) *NPoly {
 	return &NPoly{degree: deg, coefficients: make([]int, deg+1)}
 }
 
+func (f *NPoly) clone() *NPoly {
+	newlist := make([]int, f.degree+1)
+	copy(newlist, f.coefficients)
+	return &NPoly{degree: f.degree, coefficients: newlist}
+}
+
 func (p *NPoly) Increment(changes, incr int) {
 	p.coefficients[changes] += incr
 }

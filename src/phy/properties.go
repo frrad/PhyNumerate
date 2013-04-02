@@ -5,10 +5,18 @@ import (
 )
 
 func (p *Phy) Score(signal []bool) (score int) {
+	key := keygen(signal)
+	if answer, ok := p.scorecache[key]; ok {
+		return answer
+	}
+
 	set(p, signal)
 
 	score = countM(p.root)
 	zero(p)
+
+	p.scorecache[key] = score
+
 	return
 }
 
@@ -103,7 +111,22 @@ func countD(t *tree) int {
 	return score
 }
 
+func keygen(signal []bool) uint64 {
+	answer := uint64(0)
+	for i := 0; i < len(signal); i++ {
+		if signal[i] {
+			answer += 1 << uint(i)
+		}
+	}
+	return answer
+}
+
 func (p *Phy) Prob(signal []bool) *NPoly {
+	key := keygen(signal)
+	if answer, ok := p.probcache[key]; ok {
+		return answer.clone()
+	}
+
 	inside := inner(p.root)
 	answer := NewNPoly((2 * p.Size()) - 3)
 	set(p, signal)
@@ -138,7 +161,9 @@ func (p *Phy) Prob(signal []bool) *NPoly {
 
 	zero(p)
 
-	return answer
+	p.probcache[key] = answer
+
+	return answer.clone()
 }
 
 //the indexth  (bipolar?) value with nodes digits
