@@ -1,38 +1,39 @@
 package main
 
 import (
-	//"fmt"
+	"fmt"
+	"math/rand"
 	"phy"
 )
 
 func main() {
-	phy1 := phy.NewPhy(4)
-	phy2 := phy.NewPhy(4)
-	phy1.Assemble([][2]int{[2]int{0, 1}, [2]int{2, 3}, [2]int{0, 2}})
-	phy2.Assemble([][2]int{[2]int{0, 2}, [2]int{1, 3}, [2]int{0, 1}})
+	testlength := 10
+	testquantity := 25
+	testes := make([]*phy.Phy, testquantity)
 
-	phy1.Print()
+	for i := 0; i < testquantity; i++ {
+		testes[i] = phy.NewPhy(testlength)
 
-	options := []bool{true, false}
+		for !testes[i].Validate() {
+			testes[i] = phy.NewPhy(testlength)
 
-	answer := phy.NewNPoly(5)
-
-	a := false
-	for _, b := range options {
-		for _, c := range options {
-			for _, d := range options {
-				matress := []bool{a, b, c, d}
-
-				score := phy2.Score(matress)
-
-				p := phy1.Prob(matress)
-
-				p.Scale(score)
-				answer.Add(p)
+			buildcode := make([][2]int, 0)
+			for j := 0; j < testlength-1; j++ {
+				buildcode = append(buildcode, [2]int{rand.Int() % testlength, rand.Int() % testlength})
 			}
+			testes[i].Assemble(buildcode)
 		}
+
+		fmt.Println("\nNumber", i)
+		testes[i].Print()
 	}
 
-	answer.Print()
+	for i := 0; i < testquantity; i++ {
 
+		for j := 0; j < testquantity; j++ {
+
+			fmt.Println("Scored on ", i, "with probs from", j)
+			testes[i].ScoreRel(testes[j]).Print()
+		}
+	}
 }

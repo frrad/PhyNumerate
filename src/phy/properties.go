@@ -12,6 +12,33 @@ func (p *Phy) Score(signal []bool) (score int) {
 	return
 }
 
+//Returns the score on p relative to probabilities generated from q
+func (p *Phy) ScoreRel(q *Phy) *NPoly {
+
+	if p.Size() != q.Size() {
+		panic("Can't compute: size mismatch")
+	}
+
+	answer := NewNPoly((2 * p.Size()) - 3)
+
+	limit := 1 << uint(p.Size()-1)
+
+	for i := 0; i < limit; i++ {
+		test := append(binary(p.Size()-1, i), true)
+
+		score := p.Score(test)
+
+		prob := q.Prob(test)
+
+		prob.Scale(score)
+		answer.Add(prob)
+
+	}
+
+	return answer
+
+}
+
 //sets leaves according to signal
 func set(p *Phy, signal []bool) {
 	if len(signal) != p.Size() {
@@ -86,7 +113,7 @@ func (p *Phy) Prob(signal []bool) *NPoly {
 	combos := 1 << uint(numInside)
 
 	for i := 0; i < combos; i++ {
-		test := binary(numInside, i)
+		test := bipolar(numInside, i)
 		//	fmt.Println(test)
 
 		k := 0
@@ -114,8 +141,8 @@ func (p *Phy) Prob(signal []bool) *NPoly {
 	return answer
 }
 
-//the indexth binary (bipolar?) value with nodes digits
-func binary(nodes, index int) []int {
+//the indexth  (bipolar?) value with nodes digits
+func bipolar(nodes, index int) []int {
 	if nodes == 1 {
 		if index%2 == 0 {
 			return []int{-1}
@@ -124,10 +151,26 @@ func binary(nodes, index int) []int {
 		}
 	}
 	if index%2 == 0 {
-		return append(binary(nodes-1, index/2), -1)
+		return append(bipolar(nodes-1, index/2), -1)
 	}
 
-	return append(binary(nodes-1, index/2), 1)
+	return append(bipolar(nodes-1, index/2), 1)
+
+}
+
+func binary(height, index int) []bool {
+	if height == 1 {
+		if index%2 == 0 {
+			return []bool{false}
+		} else {
+			return []bool{true}
+		}
+	}
+	if index%2 == 0 {
+		return append(binary(height-1, index/2), false)
+	}
+
+	return append(binary(height-1, index/2), true)
 
 }
 

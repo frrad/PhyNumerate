@@ -49,6 +49,20 @@ func (p *Phy) Print() {
 
 }
 
+//makes sure we can reach root from each leaf
+func (p *Phy) Validate() bool {
+	for i := 0; i < len(p.leaves); i++ {
+		current := p.leaves[i]
+		for current.parent != nil {
+			current = current.parent
+		}
+		if current != p.root {
+			return false
+		}
+	}
+	return true
+}
+
 //shows contents of tree for debugging purposes
 func peek(p *Phy) {
 
@@ -104,6 +118,7 @@ func link(A, B int, p *Phy) {
 		b = b.parent
 	}
 	if a == b {
+		return
 		panic("Already linked")
 	}
 	link := tree{left: a, right: b}
